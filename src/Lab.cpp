@@ -30,13 +30,64 @@ void labMenu(vector<date_time> dateTimeVec, vector<appointment>& appointmentVec,
     }
 }
 
+
+bool validSlotID(int s_id, vector<date_time> dateTimeVec, vector<slot> slotVec)
+{
+    int date1=0, date2=0;
+    int m1=0,y1=0,d1=0,m2=0,y2=0,d2=0;
+
+    // if date is not higher than 30, it is not allowed
+    if (s_id <= 30)
+    {
+        cout << "Slot ID must be greater than 30" << endl << endl;
+        return false;
+    }
+
+    for (size_t j=30; j<slotVec.size(); ++j)
+    {
+        if (slotVec[j].getID() == s_id)
+        {
+            date1 = slotVec[j].getDateID();
+        }
+    }
+
+    for (size_t i=30; i<slotVec.size(); ++i)
+    {
+        if (slotVec[i].getAvailability() == 0)
+        {
+            //checks if there is already an appt on that day
+            date2 = slotVec[i].getDateID();
+            for (size_t k=0; k<dateTimeVec.size(); ++k)
+            {
+                if (dateTimeVec[k].getID() == date1)
+                {
+                    m1 = dateTimeVec[k].getMonth();
+                    y1 = dateTimeVec[k].getYear();
+                    d1 = dateTimeVec[k].getDay();
+                }
+                if (dateTimeVec[k].getID() == date2)
+                {
+                    m2 = dateTimeVec[k].getMonth();
+                    y2 = dateTimeVec[k].getYear();
+                    d2 = dateTimeVec[k].getDay();
+                }
+            }
+            if ((y1==y2) && (m1==m2) && (d1==d2))
+            {
+                cout << "Only 1 lab appointment per day." << endl << endl;
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 //1. add new appointment
 void addNewLab(vector<date_time> dateTimeVec, vector<appointment>& appointmentVec, vector<slot>& slotVec){
     int id=0, d_id=0, p_id=0, s_id=0, diag_id=0;
     string reason="", med="";
-    int date1=0, date2=0;
-    bool allowed=0;
-    int m1=0,y1=0,d1=0,m2=0,y2=0,d2=0;
+    //int date1=0, date2=0;
+    //int m1=0,y1=0,d1=0,m2=0,y2=0,d2=0;
 
     cout << "What is the appointment ID? ";
     cin >> id;
@@ -47,53 +98,64 @@ void addNewLab(vector<date_time> dateTimeVec, vector<appointment>& appointmentVe
 
     do
     {
-        allowed=1;
         cout << "What is the slot ID? (must be greater than 30) ";
         cin >> s_id;
-
-        for (size_t j=30; j<slotVec.size(); ++j)
-        {
-            if (slotVec[j].getID() == s_id)
-            {
-                date1 = slotVec[j].getDateID();
-            }
-        }
-        // if date is not hinger than 30, it is not allowed
-        if (date1==0)
-        {
-            cout << "Slot ID must be greater than 30" << endl << endl;
-            allowed=0;
-        }
-        for (size_t i=30; i<slotVec.size(); ++i)
-        {
-            if (slotVec[i].getAvailability() == 0)
-            {
-                //checks if there is already an appt on that day
-                date2 = slotVec[i].getDateID();
-                for (size_t k=0; k<dateTimeVec.size(); ++k)
-                {
-                    if (dateTimeVec[k].getID() == date1)
-                    {
-                        m1 = dateTimeVec[k].getMonth();
-                        y1 = dateTimeVec[k].getYear();
-                        d1 = dateTimeVec[k].getDay();
-                    }
-                    if (dateTimeVec[k].getID() == date2)
-                    {
-                        m2 = dateTimeVec[k].getMonth();
-                        y2 = dateTimeVec[k].getYear();
-                        d2 = dateTimeVec[k].getDay();
-                    }
-                }
-                if ((y1==y2) && (m1==m2) && (d1==d2))
-                {
-                    cout << "Only 1 lab appointment per day." << endl << endl;
-                    allowed=0;
-                }
-            }
-        }
     }
-    while (allowed==0);
+    while(validSlotID(s_id, dateTimeVec, slotVec) == false);
+
+
+///////////CALL FUNCTION
+//        if (s_id < 30)
+//        {
+//            allowed = 0;
+//        }
+//
+//        for (size_t j=30; j<slotVec.size(); ++j)
+//        {
+//            if (slotVec[j].getID() == s_id)
+//            {
+//                date1 = slotVec[j].getDateID();
+//            }
+//        }
+//        // if date is not higher than 30, it is not allowed
+//        if (date1==0)
+//        {
+//            cout << "Slot ID must be greater than 30" << endl << endl;
+//            allowed=0;
+//        }
+//        if (allowed==0)
+//        {
+//            for (size_t i=30; i<slotVec.size(); ++i)
+//            {
+//                if (slotVec[i].getAvailability() == 0)
+//                {
+//                    //checks if there is already an appt on that day
+//                    date2 = slotVec[i].getDateID();
+//                    for (size_t k=0; k<dateTimeVec.size(); ++k)
+//                    {
+//                        if (dateTimeVec[k].getID() == date1)
+//                        {
+//                            m1 = dateTimeVec[k].getMonth();
+//                            y1 = dateTimeVec[k].getYear();
+//                            d1 = dateTimeVec[k].getDay();
+//                        }
+//                        if (dateTimeVec[k].getID() == date2)
+//                        {
+//                            m2 = dateTimeVec[k].getMonth();
+//                            y2 = dateTimeVec[k].getYear();
+//                            d2 = dateTimeVec[k].getDay();
+//                        }
+//                    }
+//                    if ((y1==y2) && (m1==m2) && (d1==d2))
+//                    {
+//                        cout << "Only 1 lab appointment per day." << endl << endl;
+//                        allowed=0;
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    while (allowed==0);
     //loops until the slot id is allowed
 
     cout << "What is the appointment reason? ";
